@@ -2,10 +2,13 @@ import numpy as np
 import cv2
 import time
 import pyautogui
-from directkeys import PressKey, ReleaseKey, MoveCursor, LeftClick
-from directkeys import W, A, S, D, UP, DOWN, LEFT, RIGHT, CTRL, ENTER
-from grabscreen import grab_screen, window_pos
 import win32gui
+from directkeys import PressKey, ReleaseKey, MoveCursor, LeftClick
+from directkeys import W, A, S, D, U, P, UP, DOWN, LEFT, RIGHT, CTRL, ENTER
+from grabscreen import grab_screen, window_pos
+from getkeys import key_check
+
+import matplotlib.pyplot as plt
 
 
 # Posicion en pixeles
@@ -27,7 +30,7 @@ SED = (630, 942)
 # SED = [942, 630]
 
 
-dt = 0.05
+dt = 0.01
 def up():
     PressKey(UP)
     ReleaseKey(DOWN)
@@ -60,6 +63,14 @@ def right():
     time.sleep(dt)
     ReleaseKey(RIGHT)
 
+def usar():
+    PressKey(U)
+    ReleaseKey(UP)
+    ReleaseKey(DOWN)
+    ReleaseKey(LEFT)
+    ReleaseKey(RIGHT)
+    time.sleep(dt)
+    ReleaseKey(U)
 
 
 def process_img(image):
@@ -80,8 +91,25 @@ def process_img(image):
         
     mask = np.zeros(processed_img.shape,np.uint8)
     
+
+    coord = processed_img[728,870:950]
+
+    mask[720:740,870:950] = processed_img[720:740,870:950]
+
+    print(coord.shape)
+    mask_expand = np.array([coord,]*100)
+
+    print(coord)
+    plt.imshow(mask_expand)
+    plt.show()
+    # plt.plot(np.arange(coord.size), coord, marker='.')
+    # print(np.where(coord>70,1,0))
+    time.sleep(1)
+    # plt.show()
+    # input()
+    
     # screen without inventory & borders
-    mask[188:711,10:692] = processed_img[188:711,10:692]
+    # mask[188:711,10:692] = processed_img[188:711,10:692]
     
     # text = pytesseract.image_to_string(processed_img, config='--psm 6')
     # print(text)
@@ -107,13 +135,41 @@ def move_pescador(prev_screen, screen):
         return True
     return False
 
-def check_vida(val):
-    print(f'val: {val}')
-    if val < 10:
+# def check_vida(val):
+#     print(f'val: {val}')
+#     if val < 10:
         # consume
-# def check_hambre()
+def check_hambre(val):
+    print(f'hambre: {val}')
+    if val < 10:
+        MoveCursor(*INVENTARIO, bbox[0], bbox[1])
+        LeftClick()
+        MoveCursor(*INV1, bbox[0], bbox[1])
+        LeftClick()
+        usar()
+        usar()
+        usar()
 
-# def check_sed()
+
+
+
+
+        # LeftClick()
+        # time.sleep(0.01)
+        # LeftClick()
+
+
+def check_sed(val):
+    print(f'sed: {val}')
+    if val < 10:
+        MoveCursor(*INVENTARIO, bbox[0], bbox[1])
+        LeftClick()
+        MoveCursor(*INV2, bbox[0], bbox[1])
+        LeftClick()
+        usar()
+        usar()
+        usar()
+
 
 
 
@@ -131,44 +187,56 @@ if __name__ == '__main__':
     processed_screen, stats = process_img(screen)
     prev_screen = processed_screen
     
+    paused = False
     while True:
-
-        screen = grab_screen(bbox)
-        print('Frame took {} seconds'.format(time.time()-last_time))
-        last_time = time.time()    
-        processed_screen, stats = process_img(screen) 
-
-        check_vida(stats['vida'])
-        # check_hambre(stats['hambre'])
-        # check_sed(stats['sed'])           
-
-
-        #--------------------------------------------------------------
-        # pescador
-        if move_pescador(prev_screen, processed_screen):
+        if not paused:
             screen = grab_screen(bbox)
-            processed_screen, stats = process_img(screen)
-        
-        prev_screen = processed_screen
-        #--------------------------------------------------------------
+            print('Frame took {} seconds'.format(time.time()-last_time))
+            last_time = time.time()    
+            processed_screen, stats = process_img(screen) 
 
 
-        cv2.imshow('window2', processed_screen)
-        # cv2.imshow('window2',cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
-        
+            # check_vida(stats['vida'])
+            # check_hambre(stats['hambre'])
+            # check_sed(stats['sed'])
 
-        # mouse movement
-        # print(bbox)
-        # time.sleep(2)
-        # # MoveCursor(20, 50, bbox[0], bbox[1])
-        # MoveCursor(*INVENTARIO, bbox[0], bbox[1])
-        # LeftClick()
-        # MoveCursor(*INV1, bbox[0], bbox[1])
-        # LeftClick()
-        # time.sleep(0.01)
-        # LeftClick()
-        
-        #cv2.imshow('window',cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
-        if cv2.waitKey(25) & 0xFF == ord('q'):
-            cv2.destroyAllWindows()
-            break
+            #--------------------------------------------------------------
+            # pescador
+            # if move_pescador(prev_screen, processed_screen):
+            #     screen = grab_screen(bbox)
+            #     processed_screen, stats = process_img(screen)
+            
+            # prev_screen = processed_screen
+            #--------------------------------------------------------------
+
+
+            cv2.imshow('window2', processed_screen)
+            # cv2.imshow('window2',cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
+            
+
+            # mouse movement
+            # print(bbox)
+            # time.sleep(2)
+            # # MoveCursor(20, 50, bbox[0], bbox[1])
+            # MoveCursor(*INVENTARIO, bbox[0], bbox[1])
+            # LeftClick()
+            # MoveCursor(*INV1, bbox[0], bbox[1])
+            # LeftClick()
+            # time.sleep(0.01)
+            # LeftClick()
+            
+            #cv2.imshow('window',cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
+            if cv2.waitKey(25) & 0xFF == ord('q'):
+                cv2.destroyAllWindows()
+                break
+
+        keys = key_check()
+        if 'P' in keys:
+            if paused:
+                paused = False
+                print('unpaused!')
+                time.sleep(1)
+            else:
+                print('Pausing!')
+                paused = True
+                time.sleep(1)
