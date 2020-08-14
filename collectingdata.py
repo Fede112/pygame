@@ -16,21 +16,18 @@ Harrison@pythonprogramming.net
 # create_training_data.py
 
 import numpy as np
-from grabscreen import grab_screen, window_size
+from grabscreen import grab_screen, window_pos
 import cv2  
 import time
 from getkeys import key_check
 import os
 
-w = [1,0,0,0,0,0,0,0,0]
-s = [0,1,0,0,0,0,0,0,0]
-a = [0,0,1,0,0,0,0,0,0]
-d = [0,0,0,1,0,0,0,0,0]
-wa = [0,0,0,0,1,0,0,0,0]
-wd = [0,0,0,0,0,1,0,0,0]
-sa = [0,0,0,0,0,0,1,0,0]
-sd = [0,0,0,0,0,0,0,1,0]
-nk = [0,0,0,0,0,0,0,0,1]
+w = [1,0,0,0,0,0]
+s = [0,1,0,0,0,0]
+a = [0,0,1,0,0,0]
+d = [0,0,0,1,0,0]
+k = [0,0,0,0,1,0]
+nk = [0,0,0,0,0,1]
 
 starting_value = 1
 
@@ -54,14 +51,8 @@ def keys_to_output(keys):
     '''
     output = [0,0,0,0,0,0,0,0,0]
 
-    if 'W' in keys and 'A' in keys:
-        output = wa
-    elif 'W' in keys and 'D' in keys:
-        output = wd
-    elif 'S' in keys and 'A' in keys:
-        output = sa
-    elif 'S' in keys and 'D' in keys:
-        output = sd
+    if 'K' in keys:
+        output = k
     elif 'W' in keys:
         output = w
     elif 'S' in keys:
@@ -90,7 +81,7 @@ def main(file_name, starting_value):
         
         if not paused:
             
-            bbox = window_size('notepad')
+            bbox = window_pos('fénixao')
 
             # windowed mode, this is 1920x1080, but you can change this to suit whatever res you're running.
             screen = grab_screen(bbox)
@@ -117,7 +108,7 @@ def main(file_name, starting_value):
                 print(len(training_data))
                 
                 if len(training_data) == 500:
-                    # np.save(file_name,training_data)
+                    np.save(file_name,training_data)
                     print('SAVED')
                     training_data = []
                     starting_value += 1
@@ -125,7 +116,7 @@ def main(file_name, starting_value):
 
                     
         keys = key_check()
-        if 'T' in keys:
+        if 'P' in keys:
             if paused:
                 paused = False
                 print('unpaused!')

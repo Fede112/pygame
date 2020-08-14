@@ -4,7 +4,7 @@ import time
 import pyautogui
 import win32gui
 from directkeys import PressKey, ReleaseKey, MoveCursor, LeftClick
-from directkeys import W, A, S, D, U, P, UP, DOWN, LEFT, RIGHT, CTRL, ENTER
+from directkeys import W, A, S, D, U, P, K, UP, DOWN, LEFT, RIGHT, CTRL, ENTER
 from grabscreen import grab_screen, window_pos
 from getkeys import key_check
 
@@ -30,45 +30,45 @@ SED = (630, 942)
 # SED = [942, 630]
 
 
-dt = 0.01
+dt = 0.05
 def up():
-    PressKey(UP)
-    ReleaseKey(DOWN)
-    ReleaseKey(LEFT)
-    ReleaseKey(RIGHT)
+    PressKey(W)
+    ReleaseKey(S)
+    ReleaseKey(A)
+    ReleaseKey(D)
     time.sleep(dt)
-    ReleaseKey(UP)
+    ReleaseKey(W)
 
 def down():
-    PressKey(DOWN)
-    ReleaseKey(UP)
-    ReleaseKey(LEFT)
-    ReleaseKey(RIGHT)
+    PressKey(S)
+    ReleaseKey(W)
+    ReleaseKey(A)
+    ReleaseKey(D)
     time.sleep(dt)
-    ReleaseKey(DOWN)
+    ReleaseKey(S)
 
 def left():
-    PressKey(LEFT)
-    ReleaseKey(UP)
-    ReleaseKey(DOWN)
-    ReleaseKey(RIGHT)
+    PressKey(A)
+    ReleaseKey(W)
+    ReleaseKey(S)
+    ReleaseKey(D)
     time.sleep(dt)
-    ReleaseKey(LEFT)
+    ReleaseKey(A)
 
 def right():
-    PressKey(RIGHT)
-    ReleaseKey(UP)
-    ReleaseKey(DOWN)
-    ReleaseKey(LEFT)
+    PressKey(D)
+    ReleaseKey(W)
+    ReleaseKey(S)
+    ReleaseKey(A)
     time.sleep(dt)
-    ReleaseKey(RIGHT)
+    ReleaseKey(D)
 
 def usar():
     PressKey(U)
-    ReleaseKey(UP)
-    ReleaseKey(DOWN)
-    ReleaseKey(LEFT)
-    ReleaseKey(RIGHT)
+    ReleaseKey(W)
+    ReleaseKey(S)
+    ReleaseKey(A)
+    ReleaseKey(D)
     time.sleep(dt)
     ReleaseKey(U)
 
@@ -92,24 +92,17 @@ def process_img(image):
     mask = np.zeros(processed_img.shape,np.uint8)
     
 
-    coord = processed_img[728,870:950]
-
-    mask[720:740,870:950] = processed_img[720:740,870:950]
-
-    print(coord.shape)
-    mask_expand = np.array([coord,]*100)
-
-    print(coord)
-    plt.imshow(mask_expand)
-    plt.show()
-    # plt.plot(np.arange(coord.size), coord, marker='.')
-    # print(np.where(coord>70,1,0))
-    time.sleep(1)
-    # plt.show()
-    # input()
+    # coord = processed_img[728,870:950]
+    # mask[720:740,870:950] = processed_img[720:740,870:950]
+    # print(coord.shape)
+    # mask_expand = np.array([coord,]*100)
+    # print(coord)
+    # plt.imshow(mask_expand)
+    # plt.show()    
+    # time.sleep(1)
     
     # screen without inventory & borders
-    # mask[188:711,10:692] = processed_img[188:711,10:692]
+    mask[188:711,10:692] = processed_img[188:711,10:692]
     
     # text = pytesseract.image_to_string(processed_img, config='--psm 6')
     # print(text)
@@ -202,15 +195,15 @@ if __name__ == '__main__':
 
             #--------------------------------------------------------------
             # pescador
-            # if move_pescador(prev_screen, processed_screen):
-            #     screen = grab_screen(bbox)
-            #     processed_screen, stats = process_img(screen)
+            if move_pescador(prev_screen, processed_screen):
+                screen = grab_screen(bbox)
+                processed_screen, stats = process_img(screen)
             
-            # prev_screen = processed_screen
+            prev_screen = processed_screen
             #--------------------------------------------------------------
 
 
-            cv2.imshow('window2', processed_screen)
+            # cv2.imshow('window2', processed_screen)
             # cv2.imshow('window2',cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
             
 
@@ -225,10 +218,9 @@ if __name__ == '__main__':
             # time.sleep(0.01)
             # LeftClick()
             
-            #cv2.imshow('window',cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                cv2.destroyAllWindows()
-                break
+            # if cv2.waitKey(25) & 0xFF == ord('q'):
+            #     cv2.destroyAllWindows()
+            #     break
 
         keys = key_check()
         if 'P' in keys:
