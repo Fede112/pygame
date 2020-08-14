@@ -226,6 +226,11 @@ if __name__ == '__main__':
         if 'P' in keys:
             if paused:
                 paused = False
+                # update screen
+                bbox = window_pos('fénixao')
+                screen = grab_screen(bbox)
+                processed_screen, stats = process_img(screen)
+                prev_screen = processed_screen
                 print('unpaused!')
                 time.sleep(1)
             else:
